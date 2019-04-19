@@ -5,7 +5,7 @@
 # Dockerfile template adapted from
 # https://github.com/awslabs/amazon-sagemaker-examples/blob/master/advanced_functionality/scikit_bring_your_own/container/Dockerfile
 
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
          wget \
@@ -17,9 +17,14 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
          default-jre \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update
+RUN apt-get install python3.6 -y
+
+#Added change koen - upgrade pip
+RUN pip install --upgrade pip
 
 RUN pip install numpy scipy scikit-learn pandas flask gevent gunicorn requests tabulate colorama future
-RUN pip install -f http://h2o-release.s3.amazonaws.com/h2o/latest_stable_Py.html h2o --user
+RUN pip install -f http://h2o-release.s3.amazonaws.com/h2o/latest_stable_Py.html h2o --user --trusted-host h2o-release.s3.amazonaws.com
 
 
 # Set some environment variables. PYTHONUNBUFFERED keeps Python from buffering our standard
@@ -34,4 +39,5 @@ ENV PATH="/opt/program:${PATH}"
 # Set up the program in the image
 COPY automl_scripts /opt/program
 COPY hyperparameters.json /opt/ml/config/
-WORKDIR /opt/program
+WORKDIR /opt/pro
+
